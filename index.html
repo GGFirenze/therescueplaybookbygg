@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Rescue Playbook</title>
+<script src="https://cdn.amplitude.com/script/2f2ea6ed74f95ec3beab8bf01826e020.js"></script>
+<script>
+window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
+window.amplitude.init('2f2ea6ed74f95ec3beab8bf01826e020', {
+  fetchRemoteConfig: true,
+  autocapture: {
+    attribution: true,
+    pageViews: true,
+    sessions: false,
+    formInteractions: false,
+    fileDownloads: false,
+    elementInteractions: false,
+    frustrationInteractions: true
+  }
+});
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Karla:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0d1117;
+  --bg-surface: #151b23;
+  --bg-elevated: #1c2129;
+  --bg-overlay: rgba(13, 17, 23, 0.85);
+  --text-primary: #f0f6fc;
+  --text-secondary: #9198a1;
+  --text-muted: #484f58;
+  --accent: #f0b429;
+  --accent-dim: rgba(240, 180, 41, 0.12);
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --phase-1: #ef4444;
+  --phase-2: #f97316;
+  --phase-3: #eab308;
+  --phase-4: #84cc16;
+  --phase-5: #14b8a6;
+  --phase-6: #22c55e;
+  --radius: 8px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Karla', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+/* --- NAV --- */
+.phase-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  transform: translateY(-100%);
+  transition: transform 0.4s ease;
+}
+
+.phase-nav.visible { transform: translateY(0); }
+
+.phase-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 0.25rem;
+}
+
+.nav-brand {
+  font-family: 'Newsreader', serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.nav-link {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.nav-link:hover { color: var(--text-secondary); }
+.nav-link.active { color: var(--text-primary); background: var(--bg-elevated); }
+
+/* --- HERO --- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(240, 180, 41, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-meta-item {
+  text-align: center;
+}
+
+.hero-meta-value {
+  font-family: 'Newsreader', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.hero-meta-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+
+.scroll-indicator span {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* --- TIMELINE OVERVIEW --- */
+.overview {
+  padding: 6rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin-bottom: 4rem;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.timeline-phase {
+  background: var(--bg-surface);
+  padding: 2rem 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.timeline-phase:hover {
+  background: var(--bg-elevated);
+}
+
+.timeline-phase::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+.timeline-phase:hover::before { opacity: 1; }
+
+.timeline-phase:nth-child(1)::before { background: var(--phase-1); }
+.timeline-phase:nth-child(2)::before { background: var(--phase-2); }
+.timeline-phase:nth-child(3)::before { background: var(--phase-3); }
+.timeline-phase:nth-child(4)::before { background: var(--phase-4); }
+.timeline-phase:nth-child(5)::before { background: var(--phase-5); }
+.timeline-phase:nth-child(6)::before { background: var(--phase-6); }
+
+.phase-number {
+  font-family: 'Newsreader', serif;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.timeline-phase:nth-child(1) .phase-number { color: var(--phase-1); }
+.timeline-phase:nth-child(2) .phase-number { color: var(--phase-2); }
+.timeline-phase:nth-child(3) .phase-number { color: var(--phase-3); }
+.timeline-phase:nth-child(4) .phase-number { color: var(--phase-4); }
+.timeline-phase:nth-child(5) .phase-number { color: var(--phase-5); }
+.timeline-phase:nth-child(6) .phase-number { color: var(--phase-6); }
+
+.phase-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.phase-tagline {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- PHASE SECTIONS --- */
+.phase-section {
+  padding: 8rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.phase-section .section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: 'Newsreader', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--bg-primary);
+}
+
+.phase-section:nth-of-type(1) .phase-badge { background: var(--phase-1); }
+.phase-section:nth-of-type(2) .phase-badge { background: var(--phase-2); }
+.phase-section:nth-of-type(3) .phase-badge { background: var(--phase-3); }
+.phase-section:nth-of-type(4) .phase-badge { background: var(--phase-4); }
+.phase-section:nth-of-type(5) .phase-badge { background: var(--phase-5); }
+.phase-section:nth-of-type(6) .phase-badge { background: var(--phase-6); }
+
+.phase-section .section-title {
+  margin-bottom: 0.75rem;
+}
+
+.phase-objective {
+  font-family: 'Newsreader', serif;
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--border);
+}
+
+.activity-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.activity-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: var(--transition);
+}
+
+.activity-card:hover {
+  border-color: var(--border);
+  background: var(--bg-elevated);
+}
+
+.activity-card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.activity-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.key-insight {
+  background: var(--accent-dim);
+  border: 1px solid rgba(240, 180, 41, 0.2);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+}
+
+.key-insight-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.key-insight p {
+  font-family: 'Newsreader', serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.phase-output {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.phase-output-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.phase-output p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* --- DIVIDER --- */
+.divider {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.divider hr {
+  border: none;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+/* --- PRINCIPLES --- */
+.principles {
+  padding: 8rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1px;
+  background: var(--border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 3rem;
+}
+
+.principle-card {
+  background: var(--bg-surface);
+  padding: 2rem;
+  transition: var(--transition);
+}
+
+.principle-card:hover { background: var(--bg-elevated); }
+
+.principle-number {
+  font-family: 'Newsreader', serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.principle-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.principle-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* --- CASE STUDY --- */
+.case-study {
+  padding: 8rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.case-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 4rem;
+}
+
+.case-state {
+  background: var(--bg-surface);
+  padding: 2.5rem;
+}
+
+.case-state h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.case-state.before h3 { color: var(--phase-1); }
+.case-state.after h3 { color: var(--phase-6); }
+
+.case-state ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.case-state li {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding-left: 1.25rem;
+  position: relative;
+  line-height: 1.5;
+}
+
+.case-state.before li::before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  color: var(--phase-1);
+  font-size: 0.75rem;
+  top: 0.15em;
+}
+
+.case-state.after li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--phase-6);
+  font-size: 0.8rem;
+  font-weight: 700;
+  top: 0.1em;
+}
+
+.case-approach h3 {
+  font-family: 'Newsreader', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.approach-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  counter-reset: approach;
+}
+
+.approach-list li {
+  counter-increment: approach;
+  padding-left: 2.5rem;
+  position: relative;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.approach-list li::before {
+  content: counter(approach, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* --- ANTI-PATTERNS --- */
+.antipatterns {
+  padding: 8rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.antipattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.antipattern-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  transition: var(--transition);
+}
+
+.antipattern-card:hover {
+  border-color: var(--phase-1);
+}
+
+.antipattern-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--phase-1);
+}
+
+.antipattern-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.antipattern-card .instead {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  color: var(--phase-5);
+}
+
+.antipattern-card .instead strong {
+  color: var(--phase-5);
+}
+
+/* --- REUSABLE ASSETS --- */
+.assets {
+  padding: 8rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.asset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.asset-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  transition: var(--transition);
+}
+
+.asset-item:hover { border-color: var(--border); }
+
+.asset-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.asset-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.asset-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- FOOTER --- */
+.footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4rem;
+}
+
+.footer p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.footer .author {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* --- ANIMATIONS --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .timeline {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .case-header {
+    grid-template-columns: 1fr;
+  }
+  .hero-meta {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .phase-nav-inner {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-link { font-size: 0.7rem; padding: 0.3rem 0.5rem; }
+  .principles-grid {
+    grid-template-columns: 1fr;
+  }
+  .antipattern-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- PRINT --- */
+@media print {
+  body { background: #fff; color: #111; }
+  .phase-nav { display: none; }
+  .hero { min-height: auto; padding: 3rem 2rem; }
+  .phase-section { padding: 3rem 2rem; }
+  .reveal { opacity: 1; transform: none; }
+  .activity-card, .principle-card, .case-state, .timeline-phase {
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="phase-nav" id="phaseNav">
+  <div class="phase-nav-inner">
+    <span class="nav-brand">The Rescue Playbook</span>
+    <a class="nav-link" href="#triage">Triage</a>
+    <a class="nav-link" href="#discover">Discover</a>
+    <a class="nav-link" href="#plan">Plan</a>
+    <a class="nav-link" href="#deliver">Deliver</a>
+    <a class="nav-link" href="#elevate">Elevate</a>
+    <a class="nav-link" href="#bridge">Bridge</a>
+    <a class="nav-link" href="#principles">Principles</a>
+    <a class="nav-link" href="#case-study">Case Study</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-label">Professional Services × Customer Success</p>
+  <h1 class="hero-title">The Rescue<br><em>Playbook</em></h1>
+  <p class="hero-subtitle">A repeatable framework for turning churn risk into renewal — built from the field, proven with customers.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <div class="hero-meta-value">6</div>
+      <div class="hero-meta-label">Phases</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-value">10</div>
+      <div class="hero-meta-label">Core Principles</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-value">1</div>
+      <div class="hero-meta-label">Case Study</div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="overview reveal">
+  <p class="section-label">Framework Overview</p>
+  <h2 class="section-title">Six phases. One mission.</h2>
+  <p class="section-desc">Every rescue follows the same arc: from diagnosing the damage to bridging the customer back to a healthy renewal conversation. The colour gradient tells the story — red risk to green renewal.</p>
+
+  <div class="timeline">
+    <a href="#triage" class="timeline-phase">
+      <div class="phase-number">01</div>
+      <div class="phase-name">Triage</div>
+      <div class="phase-tagline">Assess the full scope of the crisis before acting.</div>
+    </a>
+    <a href="#discover" class="timeline-phase">
+      <div class="phase-number">02</div>
+      <div class="phase-name">Discover</div>
+      <div class="phase-tagline">Listen deep. Diagnose the real root causes.</div>
+    </a>
+    <a href="#plan" class="timeline-phase">
+      <div class="phase-number">03</div>
+      <div class="phase-name">Plan</div>
+      <div class="phase-tagline">Chart a transparent recovery roadmap.</div>
+    </a>
+    <a href="#deliver" class="timeline-phase">
+      <div class="phase-number">04</div>
+      <div class="phase-name">Deliver</div>
+      <div class="phase-tagline">Create undeniable, hands-on value.</div>
+    </a>
+    <a href="#elevate" class="timeline-phase">
+      <div class="phase-number">05</div>
+      <div class="phase-name">Elevate</div>
+      <div class="phase-tagline">Align executives on ROI and the path forward.</div>
+    </a>
+    <a href="#bridge" class="timeline-phase">
+      <div class="phase-number">06</div>
+      <div class="phase-name">Bridge</div>
+      <div class="phase-tagline">Transition from recovery into renewal.</div>
+    </a>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PHASE 1: TRIAGE -->
+<section class="phase-section reveal" id="triage">
+  <p class="section-label"><span class="phase-badge">1</span> Phase One</p>
+  <h2 class="section-title">Triage — Assess the Damage</h2>
+  <p class="phase-objective">Understand the full scope of the crisis before taking any action. Resist the urge to fix — first, see clearly.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Review Account History</h4>
+      <p>Audit the account timeline: contracts, past touchpoints, escalation history, previous interventions. Understand what was tried and why it failed.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Assess Four Dimensions</h4>
+      <p><strong>Trust:</strong> How does the customer feel about the partnership? <strong>Adoption:</strong> How deeply are they using the product? <strong>Issues:</strong> What open complaints exist? <strong>Stakeholders:</strong> Who are the key players and what are their stances?</p>
+    </div>
+    <div class="activity-card">
+      <h4>Classify the Root Cause</h4>
+      <p>Is this a product problem, a process problem, or a people problem? Most churn risks are not product failures — they are breakdowns in enablement, communication, or internal processes at the customer.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Identify Your Point of Contact</h4>
+      <p>Find the person on the customer side who will be your partner in recovery. This person must be invested in success and willing to collaborate closely.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Key Insight</div>
+    <p>Don't diagnose until you've listened. Don't prescribe until you've diagnosed. A clear-eyed assessment with no sugarcoating is the foundation everything else is built on.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>A clear-eyed assessment of account health, a root cause hypothesis, and an identified POC ready to partner on recovery.</p>
+  </div>
+</section>
+
+<!-- PHASE 2: DISCOVER -->
+<section class="phase-section reveal" id="discover">
+  <p class="section-label"><span class="phase-badge">2</span> Phase Two</p>
+  <h2 class="section-title">Discover — Listen Deep, Diagnose Root Causes</h2>
+  <p class="phase-objective">Build trust through genuine listening while surfacing the real problems behind the stated complaints.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Start With the POC</h4>
+      <p>Meet your Point of Contact first. Let them tell the full story — their frustrations, their teams' pain, what they've tried. Listen without defending. Your job here is to absorb, not to respond.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Interview Every Team</h4>
+      <p>Conduct individual interviews with every impacted team. Ask: What are your real complaints? What would you want to achieve with the platform? What business questions are you trying to answer?</p>
+    </div>
+    <div class="activity-card">
+      <h4>Perform a Technical Audit</h4>
+      <p>Separate platform issues from usage issues. Audit the customer's implementation, data taxonomy, and configuration. Often, the problem is not the tool — it's how the tool was set up and is being used.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Map Stated vs. Actual Problems</h4>
+      <p>Many complaints are symptoms, not causes. A user saying "this feature doesn't work" may actually be revealing a knowledge gap. Surface these gaps with empathy, then demonstrate what's possible.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Identify Silos</h4>
+      <p>Look for teams working in isolation who share similar goals. Siloed processes are one of the biggest barriers to value realisation — and one of the biggest opportunities for you to create impact by connecting people.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Reframe Business Questions</h4>
+      <p>Assess whether the customer's questions are <em>reporting-oriented</em> ("How many subscribers in France?") or <em>decision-oriented</em> ("What behaviours predict churn in France, and what's our target?"). The former produces dashboards. The latter produces outcomes.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Key Technique</div>
+    <p>Challenge with empathy. When a complaint stems from a knowledge gap, don't say "you're wrong" — demonstrate the capability. Let the revelation come from their own experience. When business questions are report-oriented, gently reframe toward decisions and targets.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>Root cause analysis, stakeholder map with individual needs, knowledge gap inventory, and a clear picture of what needs to change — at the platform level and the process level.</p>
+  </div>
+</section>
+
+<!-- PHASE 3: PLAN -->
+<section class="phase-section reveal" id="plan">
+  <p class="section-label"><span class="phase-badge">3</span> Phase Three</p>
+  <h2 class="section-title">Plan — Chart the Recovery</h2>
+  <p class="phase-objective">Define a structured, transparent recovery roadmap. The customer must believe in this plan because they helped shape it.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Create the Action Plan</h4>
+      <p>Build a clear plan with milestones, owners, and timelines. Share it openly with the customer. Transparency is non-negotiable — it's the first step in rebuilding trust.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Heal Before You Build</h4>
+      <p>No upsells. No new feature pitches. No expansion conversations. The infected wound must be cleaned first. Resolve existing pain before proposing anything new. Sales motions at this stage will destroy what little trust remains.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Align Internal Resources</h4>
+      <p>Coordinate with Value Engineering, Training, Product, and Executive Sponsors. Define who does what. If internal ownership is lacking, be prepared to carry the weight yourself.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Establish a Cadence</h4>
+      <p>Set up regular check-ins with your POC. Consistent presence signals commitment. Unreliable follow-up signals the customer is not a priority — even if that's not the intent.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Key Insight</div>
+    <p>The plan exists to rebuild trust as much as to organise work. A customer who can see the roadmap, who helped define it, and who sees you executing on it — that customer starts to believe the partnership can work.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>A recovery action plan with milestones, clear ownership, an established cadence, and internal alignment on who delivers what.</p>
+  </div>
+</section>
+
+<!-- PHASE 4: DELIVER -->
+<section class="phase-section reveal" id="deliver">
+  <p class="section-label"><span class="phase-badge">4</span> Phase Four</p>
+  <h2 class="section-title">Deliver — Create Undeniable Value</h2>
+  <p class="phase-objective">Prove the platform's value through tangible, tailored outcomes. This is where the rescue is won or lost — in the work itself.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Build Tailored Solutions</h4>
+      <p>Create custom dashboards and analyses addressing each team's specific business questions. Don't just advise — build. Show, don't tell. The deliverables must speak for themselves.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Coach the POC</h4>
+      <p>Invest heavily in 1:1 technical coaching with your Point of Contact. Build their internal expertise so they become the internal champion who can sustain momentum after you step back.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Run Cross-Team Workshops</h4>
+      <p>Bring siloed teams together when you discover they share objectives. Joint workshops create alignment, reduce duplication, and demonstrate platform value across the organisation — not just within one team.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Be Proactively Generous</h4>
+      <p>Anticipate needs and deliver before being asked. Think about what problems or business questions people might have and build solutions proactively. Go further than expected — open your own account with the product, create demo environments, build proof-of-concept workflows.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Use Competitive Benchmarking</h4>
+      <p>"Your competitors use the same platform and are successful. The gap isn't the product — it's in process." This reframes the conversation from blame to empowerment. The customer has agency to close the gap.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Deliver On-Site When Possible</h4>
+      <p>Physical presence compounds trust. If you can run workshops on-site, do it. The investment of time and effort signals commitment at a level that remote engagement cannot match.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Core Principle</div>
+    <p>Create strategic dependency through value. By doing the work — building dashboards, running analyses, coaching individuals — you become indispensable. The customer's experience shifts from scepticism to reliance. This is the turning point of every rescue.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>Tangible deliverables per team, an upskilled POC, cross-team alignment, and a customer who has experienced the platform's value firsthand — not been told about it.</p>
+  </div>
+</section>
+
+<!-- PHASE 5: ELEVATE -->
+<section class="phase-section reveal" id="elevate">
+  <p class="section-label"><span class="phase-badge">5</span> Phase Five</p>
+  <h2 class="section-title">Elevate — Executive Alignment & ROI</h2>
+  <p class="phase-objective">Lock in the value story at the executive level with quantified business impact. Individual team wins must roll up into an organisational narrative.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Executive Business Review</h4>
+      <p>Organise an EBR with senior leadership from both sides. This is not a product demo — it's a strategic alignment session. Bring your executives to the table; it signals that this customer matters at the highest level.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Build ROI Frameworks</h4>
+      <p>Connect platform usage to business outcomes with concrete numbers. Develop measurement frameworks — e.g., quantifying the revenue impact of technical errors, or correlating adoption metrics to business KPIs.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Let the Customer Speak</h4>
+      <p>By this point, the customer should be voicing the transformation themselves. Their words carry more weight than yours. Create the conditions for this — but don't script it. Authentic advocacy is earned, not manufactured.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Align on the Future</h4>
+      <p>The EBR is not just a look-back — it's a look-forward. What does the next chapter of the partnership look like? What use cases can be expanded? What's the shared vision? This sets the stage for renewal.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Key Insight</div>
+    <p>Reusable assets created during this phase — such as ROI measurement frameworks — have value beyond a single account. Document them. Share them across the organisation. The best playbooks generate compounding returns.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>Executive-level validation of the partnership's value, a quantified ROI story, shared forward-looking strategy, and reusable frameworks for the broader CS/PS organisation.</p>
+  </div>
+</section>
+
+<!-- PHASE 6: BRIDGE -->
+<section class="phase-section reveal" id="bridge">
+  <p class="section-label"><span class="phase-badge">6</span> Phase Six</p>
+  <h2 class="section-title">Bridge — From Recovery to Renewal</h2>
+  <p class="phase-objective">Transition the rescued account from recovery mode into a healthy, sustainable renewal conversation.</p>
+
+  <div class="activity-grid">
+    <div class="activity-card">
+      <h4>Validate Sentiment Shift</h4>
+      <p>Confirm the transformation is real — not just with your POC, but across multiple stakeholders. A rescue isn't complete until the organisation's perception has shifted, not just one person's.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Create Success Plans</h4>
+      <p>Document comprehensive success plans for each team and use case. These serve as the handoff document — they ensure continuity regardless of who owns the account going forward.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Warm Handoff to Sales</h4>
+      <p>Arm Sales with the full context: what was broken, what was fixed, the ROI story, and the customer's current sentiment. The customer should enter renewal conversations from a position of confidence, not resentment.</p>
+    </div>
+    <div class="activity-card">
+      <h4>Don't Disappear</h4>
+      <p>Maintain your personal connection with the POC and key stakeholders through the renewal period. A sudden absence after months of intense engagement will feel like abandonment — and can undo trust.</p>
+    </div>
+  </div>
+
+  <div class="key-insight">
+    <div class="key-insight-label">Key Insight</div>
+    <p>The rescue is not complete at renewal. It's complete when the account is self-sustaining — when the customer has internal champions, working processes, and the confidence to extract value independently. Your goal is to make yourself unnecessary, even as you made yourself indispensable.</p>
+  </div>
+
+  <div class="phase-output">
+    <div class="phase-output-label">Phase Output</div>
+    <p>A customer entering renewal from a position of trust. Documented success plans. A Sales team armed with context and confidence. And a relationship that can sustain beyond the rescue.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PRINCIPLES -->
+<section class="principles reveal" id="principles">
+  <p class="section-label">The Foundation</p>
+  <h2 class="section-title">10 Core Principles</h2>
+  <p class="section-desc">These principles aren't theoretical. They were forged in the field — through real rescues, real pressure, and real outcomes.</p>
+
+  <div class="principles-grid">
+    <div class="principle-card">
+      <div class="principle-number">01</div>
+      <h3>Extreme Ownership</h3>
+      <p>When no one else steps up, you step up. Own the outcome entirely. The customer doesn't care about internal ownership gaps — they care about results.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">02</div>
+      <h3>Listen Before You Act</h3>
+      <p>Deep listening builds trust and reveals root causes. The first meeting is for absorbing — not defending, not solutioning, not pitching.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">03</div>
+      <h3>Heal Before You Build</h3>
+      <p>Address existing pain before proposing anything new. Clean the wound first. Sales motions on a frustrated customer accelerate churn — they don't prevent it.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">04</div>
+      <h3>Do the Work</h3>
+      <p>Don't just advise. Build the dashboards. Run the analysis. Create the demos. Tangible deliverables build more trust than any number of strategy decks.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">05</div>
+      <h3>Challenge With Respect</h3>
+      <p>Validate the customer's feelings, but challenge their assumptions when evidence supports it. Knowledge gaps masquerading as product complaints are your biggest opportunity.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">06</div>
+      <h3>Break the Silos</h3>
+      <p>Look for teams with shared goals who don't know they share them. Bringing people together across organisational boundaries multiplies the value of every engagement.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">07</div>
+      <h3>Reframe the Questions</h3>
+      <p>Shift customers from "what are the numbers?" to "what decisions will you make?" Report-oriented questions produce dashboards. Decision-oriented questions produce outcomes.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">08</div>
+      <h3>Be Proactively Generous</h3>
+      <p>Anticipate needs and deliver before being asked. The best way to rebuild trust is to consistently exceed expectations — especially when no one is watching.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">09</div>
+      <h3>Create Strategic Dependency</h3>
+      <p>Make yourself indispensable through consistent, high-quality delivery. The customer's trust shifts from scepticism to reliance — and that reliance carries into the renewal conversation.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-number">10</div>
+      <h3>Use Competitive Pressure Wisely</h3>
+      <p>Benchmark against peers to motivate, not to intimidate. "The platform is the same for everyone — the difference is process." This empowers customers to close their own gaps.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CASE STUDY -->
+<section class="case-study reveal" id="case-study">
+  <p class="section-label">In Practice</p>
+  <h2 class="section-title">Case Study: Canal+</h2>
+  <p class="section-desc" style="margin-bottom: 3rem;">A global media company on the verge of churn — rescued through disciplined execution of this playbook.</p>
+
+  <div class="case-header">
+    <div class="case-state before">
+      <h3>Before</h3>
+      <ul>
+        <li>Zero trust in the platform across the organisation</li>
+        <li>Product perceived as "only good for reading numbers, not taking action"</li>
+        <li>Minimal adoption — limited to basic reporting</li>
+        <li>Director of Data planning to remove key use cases from taxonomy</li>
+        <li>Multiple teams with open complaints and unresolved issues</li>
+        <li>Relationship health at its lowest point</li>
+        <li>Siloed teams with no cross-functional collaboration</li>
+      </ul>
+    </div>
+    <div class="case-state after">
+      <h3>After</h3>
+      <ul>
+        <li>Complete sentiment transformation across all stakeholder levels</li>
+        <li>Platform recognised as a strategic decision-making tool</li>
+        <li>Increased adoption with tailored dashboards per team</li>
+        <li>Customer publicly praised the turnaround of the partnership</li>
+        <li>Teams connected around shared objectives and workflows</li>
+        <li>Account moved from active churn risk to renewal negotiations</li>
+        <li>ROI framework adopted as a reusable asset for other accounts</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="case-approach">
+    <h3>What Was Done</h3>
+    <ol class="approach-list">
+      <li>Conducted a comprehensive data and taxonomy audit — confirmed the problem was implementation and process, not platform capability.</li>
+      <li>Interviewed every impacted team individually. Surfaced real needs, knowledge gaps, and siloed processes that had been invisible from the outside.</li>
+      <li>Reframed business questions from reporting-oriented to decision-oriented. Helped teams define target metrics and actionable KPIs instead of passive dashboards.</li>
+      <li>Built tailored dashboards and analyses for each team's specific business questions — hands-on, not advisory.</li>
+      <li>Delivered intensive 1:1 technical coaching with the customer's POC, building internal expertise and a genuine champion.</li>
+      <li>Created proof-of-concept demonstrations using real product data — including opening a personal account to generate authentic demo content.</li>
+      <li>Brought siloed teams together once shared objectives were identified, creating cross-functional alignment for the first time.</li>
+      <li>Delivered 17 on-site workshops in Paris — a concentrated investment that compounded trust and demonstrated commitment.</li>
+      <li>Developed a reusable framework for measuring the revenue impact of technical errors — later adopted by other accounts.</li>
+      <li>Coordinated an Executive Business Review with C-suite leadership, presenting an ROI-based strategy for the partnership's future.</li>
+    </ol>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- ANTI-PATTERNS -->
+<section class="antipatterns reveal" id="antipatterns">
+  <p class="section-label">What Not to Do</p>
+  <h2 class="section-title">Common Anti-Patterns</h2>
+  <p class="section-desc">Patterns that undermine rescues. Recognise them early — in yourself, in your team, or in your organisation's processes.</p>
+
+  <div class="antipattern-grid">
+    <div class="antipattern-card">
+      <h4>Pitching During Pain</h4>
+      <p>Responding to customer frustrations with sales pitches or upsell proposals. The customer is describing an open wound — they don't want to hear about new features.</p>
+      <p class="instead"><strong>Instead:</strong> Acknowledge the pain. Fix what's broken. Only discuss expansion once trust is restored.</p>
+    </div>
+    <div class="antipattern-card">
+      <h4>Surface-Level Check-Ins</h4>
+      <p>Running status calls that ask "how's everything going?" without substance. At-risk customers need evidence of progress, not pleasantries.</p>
+      <p class="instead"><strong>Instead:</strong> Show up with deliverables. Every interaction should demonstrate tangible progress.</p>
+    </div>
+    <div class="antipattern-card">
+      <h4>Ownership Diffusion</h4>
+      <p>Multiple people "involved" but no one accountable. The customer experiences confusion, contradictory messages, and nothing getting done.</p>
+      <p class="instead"><strong>Instead:</strong> One person owns the rescue. Others support. The customer has one throat to choke and one hand to shake.</p>
+    </div>
+    <div class="antipattern-card">
+      <h4>Advising Without Doing</h4>
+      <p>Telling the customer what they should do without building it yourself. Strategy without execution is just a slide deck gathering dust.</p>
+      <p class="instead"><strong>Instead:</strong> Build the dashboard. Create the analysis. Do the work — then walk them through it.</p>
+    </div>
+    <div class="antipattern-card">
+      <h4>Ignoring Internal Silos</h4>
+      <p>Treating each team as an isolated engagement. You miss the compounding value of connecting teams with shared objectives.</p>
+      <p class="instead"><strong>Instead:</strong> Map shared goals across teams. Create joint workshops. Let teams discover their common ground.</p>
+    </div>
+    <div class="antipattern-card">
+      <h4>Vanishing After the Win</h4>
+      <p>Disengaging once sentiment improves but before the renewal closes. The customer feels used — trust evaporates right when it matters most.</p>
+      <p class="instead"><strong>Instead:</strong> Stay present through renewal. The bridge phase is as important as the rescue itself.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- REUSABLE ASSETS -->
+<section class="assets reveal">
+  <p class="section-label">Scale the Impact</p>
+  <h2 class="section-title">Reusable Assets</h2>
+  <p class="section-desc">Frameworks and tools developed during rescues that can be deployed across accounts.</p>
+
+  <div class="asset-list">
+    <div class="asset-item">
+      <div class="asset-icon">📐</div>
+      <div class="asset-info">
+        <h4>Revenue Impact of Technical Errors Framework</h4>
+        <p>A measurement framework that quantifies how technical issues (data quality, taxonomy gaps, implementation errors) translate into lost revenue or missed business opportunities. Already adopted by multiple accounts.</p>
+      </div>
+    </div>
+    <div class="asset-item">
+      <div class="asset-icon">🔍</div>
+      <div class="asset-info">
+        <h4>Data & Taxonomy Audit Template</h4>
+        <p>A structured audit process for assessing whether customer issues stem from platform limitations or implementation/usage problems. Includes diagnostic questions and evaluation criteria.</p>
+      </div>
+    </div>
+    <div class="asset-item">
+      <div class="asset-icon">🎯</div>
+      <div class="asset-info">
+        <h4>Business Question Reframing Workshop</h4>
+        <p>A facilitated workshop format that helps customers evolve from reporting-oriented questions ("How many X?") to decision-oriented questions ("What predicts X, and what's our target?").</p>
+      </div>
+    </div>
+    <div class="asset-item">
+      <div class="asset-icon">🗺️</div>
+      <div class="asset-info">
+        <h4>Stakeholder Interview Template</h4>
+        <p>A structured interview guide for surfacing real complaints, business questions, knowledge gaps, and cross-team dependencies during the Discovery phase.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>The Rescue Playbook — <span class="author">Professional Services, Customer Success</span></p>
+  <p style="margin-top: 0.5rem;">Built from the field. Proven with customers. Designed to scale.</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.getElementById('phaseNav');
+  const hero = document.querySelector('.hero');
+  const sections = document.querySelectorAll('.phase-section, .principles, .case-study');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const reveals = document.querySelectorAll('.reveal');
+
+  const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  reveals.forEach(el => revealObserver.observe(el));
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+        nav.classList.add('visible');
+      }
+      if (entry.isIntersecting) {
+        nav.classList.remove('visible');
+      }
+    });
+  }, { threshold: 0 });
+
+  navObserver.observe(hero);
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(section => {
+    if (section.id) sectionObserver.observe(section);
+  });
+
+  // Track nav link clicks
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const sectionName = link.textContent.trim();
+      window.amplitude.track('Nav Button Clicked', {
+        button_name: sectionName,
+        section_name: sectionName
+      });
+    });
+  });
+
+  // Track timeline phase card clicks
+  document.querySelectorAll('.timeline-phase').forEach(card => {
+    card.addEventListener('click', () => {
+      const cardName = card.querySelector('.phase-name').textContent.trim();
+      window.amplitude.track('Timeline Card Clicked', {
+        card_name: cardName
+      });
+    });
+  });
+});
+</script>
+
+</body>
+</html>
